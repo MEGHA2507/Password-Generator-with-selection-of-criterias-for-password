@@ -6,12 +6,13 @@ const numberEl = document.getElementById('number');
 const symbolEl = document.getElementById('symbol');
 const generatePasswordEl = document.getElementById('generate');
 const clipboardEl = document.getElementById('clipboard');
+// document.getElementById('toast-container').style.display = 'none';
 
 const randomFunction = {
     lower: getRandomLower,
     upper: getRandomUpper,
     number: getRandomNumber,
-    symbols: getRandomSymbols,
+    symbol: getRandomSymbols,
 }
 
 generatePasswordEl.addEventListener('click', () => {
@@ -23,6 +24,25 @@ generatePasswordEl.addEventListener('click', () => {
 
     resultEl.innerText = generatePassword(hasLower, hasUpper, hasNumber, hasSymbol, length);
 
+})
+
+clipboardEl.addEventListener('click', () => {
+    const textarea = document.createElement('textarea');
+    const password = resultEl.innerText;
+
+    if(!password){ return }
+
+    textarea.value = password;
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand('copy');
+    textarea.remove();
+
+    document.getElementById('toast-container').style.display = 'block';
+    
+    setTimeout(() => {
+        document.getElementById('toast-container').style.display = 'none';
+    }, 5000);
 })
 
 function generatePassword(lower, upper, number, symbol, length){
@@ -38,7 +58,11 @@ function generatePassword(lower, upper, number, symbol, length){
     for(let i=0; i< length;i+=typesCount){
         typesArr.forEach(type => {
             const funcName = Object.keys(type)[0];
-            generatedPassword += randomFunction[funcName]
+            console.log(randomFunction[funcName]);
+            if(randomFunction[funcName] !== undefined){
+                generatedPassword += randomFunction[funcName]();
+            }
+            
         })
     }
 
@@ -46,7 +70,6 @@ function generatePassword(lower, upper, number, symbol, length){
     return finalPassword;
 
 }
-
 
 function getRandomLower(){
     // a = 97, 26 is number of letters
